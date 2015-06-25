@@ -1,2 +1,5 @@
 # angular-datetime
-Angular directives for date and time pickers
+
+Basic date/time pickers for Angular.js.
+
+> Maintained by @Tathanen

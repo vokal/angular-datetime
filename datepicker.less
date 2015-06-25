@@ -1,0 +1,67 @@
+@charset "utf-8";
+
+/* datepicker Styles */
+
+.date-picker {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 1;
+    width: 172px;
+    margin-top: 2px;
+    padding: 2px 0px 0px 2px;
+    overflow: hidden;
+    border: 1px solid #CCCCCC;
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 3px 0 rgba(0,0,0,0.2);
+
+    .month-name {
+        clear: left;
+        padding: 3px 0px;
+        margin: 0px 2px 2px 0px;
+        background-color: #EEEEEE;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .month-prev,
+    .month-next {
+        position: absolute;
+        top: 4px;
+        left: 10px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .month-next { left: auto; right: 10px; }
+
+    .filler-space,
+    .day-name-cell,
+    .date-cell {
+        float: left;
+        width: 20px;
+        height: 20px;
+        margin: 0px 2px 2px 0px;
+        border: 1px solid #FFFFFF;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        cursor: default;
+    }
+
+    .day-name-cell { color: #AAAAAA; }
+
+    .date-cell {
+        border: 1px solid #CCCCCC; cursor: pointer;
+
+        &.today {
+            border: 1px solid #AAAAAA;
+            background-color: #EEEEEE;
+            color: #666666;
+        }
+
+        &:hover { background-color: #EEEEEE; }
+    }
+
+}

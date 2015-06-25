@@ -1,0 +1,27 @@
+@charset "utf-8";
+
+/* timepicker Styles */
+
+.time-picker {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    max-height: 144px;
+    margin-top: 2px;
+    overflow: auto;
+    border: 1px solid #CCCCCC;
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 3px 0 rgba(0,0,0,0.2);
+
+    & > div {
+        padding: 6px;
+        background-color: #FFFFFF;
+        font-size: 12px;
+        cursor: default;
+
+        &:hover { background-color: #EEEEEE; }
+    }
+}

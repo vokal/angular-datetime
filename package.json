@@ -1,0 +1,20 @@
+{
+  "name": "angular-datetime",
+  "description": "Basic date/time pickers for Angular.js",
+  "homepage": "http://github.com/vokal/angular-datetime",
+  "bugs": {
+    "url": "http://github.com/vokal/angular-datetime/issues"
+  },
+  "authors": [
+    {
+      "name": "Vokal",
+      "email": "webdevelopers@vokal.io"
+    }
+  ],
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/vokal/angular-datetime"
+  },
+  "license": "MIT"
+}
