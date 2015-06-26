@@ -6,9 +6,6 @@ angular.module( "vokal.timePicker", [] )
     {
         "use strict";
 
-        // Usage: <input type="text" x-ng-model="modelName" x-time-picker
-        //                           x-time-picker-options='{ "interval": 30 }'>
-
         return {
             restrict: "A",
             scope: {},
@@ -22,40 +19,47 @@ angular.module( "vokal.timePicker", [] )
 
                     ngModelController.$setValidity( "time", !isNaN( timeData.getTime() ) );
 
-                    return timeData;
+                    return attrs.pickerType === "string" ?
+                        $filter( "date" )( timeData, attrs.timePicker || "h:mm a" ) : timeData;
                 } );
 
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function( data )
                 {
-                    if( data )
+                    var validTime, timeData = data;
+
+                    if( timeData )
                     {
-                        ngModelController.$setValidity( "time", data.getTime && !isNaN( data.getTime() ) );
+                        if( typeof timeData.getTime !== "function" )
+                        {
+                            timeData = new Date( "1/1/1990 " + timeData );
+                        }
+
+                        validTime = !isNaN( timeData.getTime() );
+
+                        ngModelController.$setValidity( "time", validTime );
                     }
 
-                    return data ? $filter( "date" )( data, "shortTime" ) : "";
+                    return validTime ? $filter( "date" )( timeData, attrs.timePicker || "h:mm a" ) : data;
                 } );
 
                 // Initialize
                 scope.times = [];
                 scope.showTimepicker = false;
-                var options  = attrs.timePickerOptions ? JSON.parse( attrs.timePickerOptions ) : {};
-                var interval = options.interval || 60;
-                var hour, minute, apm;
+                var interval = attrs.pickerInterval ? parseInt( attrs.pickerInterval, 10 ) : 60;
+                var workingTime, minute, formattedTime;
 
                 // Build array of time objects by interval
                 for( var i = 0; i < 24; i++ )
                 {
                     for( var k = 0; k < 60; k += interval )
                     {
-                        hour   = i > 12 ? i - 12 : i;
-                        hour   = hour === 0 ? hour + 12 : hour;
-                        minute = k < 10 ? "0" + k : k;
-                        apm    = i > 11 ? "PM" : "AM";
-                        scope.times.push( { display: hour + ":" + minute + " " + apm, value: i + ":" + minute } );
+                        minute        = k < 10 ? "0" + k : k;
+                        workingTime   = new Date( "1/1/1990 " + i + ":" + minute );
+                        formattedTime = $filter( "date" )( workingTime, attrs.timePicker || "h:mm a" );
+                        scope.times.push( formattedTime );
                     }
                 }
-
                 // Function to put selected time in the scope
                 scope.applyTime = function ( selectedTime )
                 {
@@ -66,9 +70,9 @@ angular.module( "vokal.timePicker", [] )
 
                 // Build picker template and register with the directive scope
                 var template = angular.element(
-                    '<div class="time-picker" x-ng-show="showTimepicker">' +
-                    '<div x-ng-repeat="time in times" x-ng-click="applyTime( time.display )">' +
-                    '{{ time.display }}</div></div>' );
+                    '<ol class="time-picker" data-ng-show="showTimepicker">' +
+                    '<li data-ng-repeat="time in times" data-ng-click="applyTime( time )">' +
+                    '{{ time }}</li></ol>' );
                 $compile( template )( scope );
                 element.after( template );
 
@@ -92,27 +96,28 @@ angular.module( "vokal.timePicker", [] )
 
                 // Hide the picker when clicking away
                 angular.element( document.getElementsByTagName( "html" )[ 0 ] )
-                .on( "mousedown touchstart", function ( event )
-                {
-                    if( !scope.showTimepicker )
-                    {
-                        return;
-                    }
 
-                    for( var focusScope = angular.element( event.target ).scope();
-                            focusScope; focusScope = focusScope.$parent )
+                    .on( "mousedown touchstart", function ( event )
                     {
-                        if ( scope.$id === focusScope.$id )
+                        if( !scope.showTimepicker )
                         {
                             return;
                         }
-                    }
 
-                    scope.$apply( function ()
-                    {
-                        scope.showTimepicker = false;
+                        for( var focusScope = angular.element( event.target ).scope();
+                                focusScope; focusScope = focusScope.$parent )
+                        {
+                            if ( scope.$id === focusScope.$id )
+                            {
+                                return;
+                            }
+                        }
+
+                        scope.$apply( function ()
+                        {
+                            scope.showTimepicker = false;
+                        } );
                     } );
-                } );
 
             }
         };

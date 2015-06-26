@@ -13,6 +13,7 @@
     "angular": "1.4.x"
   },
   "ignore": [
+    "Gruntfile.js",
     "package.json"
   ]
 }

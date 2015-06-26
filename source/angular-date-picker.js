@@ -1,4 +1,3 @@
-// Attach a date picker to a text input field
 angular.module( "vokal.datePicker", [] )
 
 .directive( "datePicker", [ "$compile", "$filter",
@@ -7,11 +6,9 @@ angular.module( "vokal.datePicker", [] )
     {
         "use strict";
 
-        // Usage: <input type="text" x-ng-model="modelName" x-datepicker="modelName">
-
         return {
             restrict: "A",
-            scope: { dateValue: "=datePicker" },
+            scope: {},
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
@@ -22,18 +19,28 @@ angular.module( "vokal.datePicker", [] )
 
                     ngModelController.$setValidity( "date", !isNaN( dateData.getTime() ) );
 
-                    return dateData;
+                    return attrs.pickerType === "string" ?
+                        $filter( "date" )( dateData, attrs.datePicker || "M/d/yyyy" ) : dateData;
                 } );
 
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function( data )
                 {
-                    if( data )
+                    var validDate, dateData = data;
+
+                    if( dateData )
                     {
-                        ngModelController.$setValidity( "date", data.getTime && !isNaN( data.getTime() ) );
+                        if( typeof dateData.getTime !== "function" )
+                        {
+                            dateData = new Date( dateData );
+                        }
+
+                        validDate = !isNaN( dateData.getTime() );
+
+                        ngModelController.$setValidity( "date", validDate );
                     }
 
-                    return data ? $filter( "date" )( data, "M/d/yyyy" ) : "";
+                    return validDate ? $filter( "date" )( dateData, attrs.datePicker || "M/d/yyyy" ) : data;
                 } );
 
                 // Initialize
@@ -70,21 +77,25 @@ angular.module( "vokal.datePicker", [] )
                 // Function to put selected date in the scope
                 scope.applyDate = function ( selectedDate )
                 {
-                    scope.dateValue = new Date( selectedDate );
+                    var workingDate   = new Date( selectedDate );
+                    var formattedDate = $filter( "date" )( workingDate, attrs.datePicker || "M/d/yyyy" );
+
+                    ngModelController.$setViewValue( formattedDate );
+                    ngModelController.$render();
                     scope.showDatepicker = false;
                 };
 
                 // Build picker template and register with the directive scope
                 var template = angular.element(
-                    '<div class="date-picker" x-ng-show="showDatepicker">' +
+                    '<div class="date-picker" data-ng-show="showDatepicker">' +
                     '<div class="month-name">{{ monthName }} {{ year }}</div>' +
-                    '<div class="month-prev" x-ng-click="buildMonth( prevYear, prevMonth )">&lt;</div>' +
-                    '<div class="month-next" x-ng-click="buildMonth( nextYear, nextMonth )">&gt;</div>' +
-                    '<div class="day-name-cell" x-ng-repeat="dayName in dayNames">{{ dayName }}</div>' +
-                    '<div class="filler-space" x-ng-repeat="space in filler"></div>' +
+                    '<div class="month-prev" data-ng-click="buildMonth( prevYear, prevMonth )">&lt;</div>' +
+                    '<div class="month-next" data-ng-click="buildMonth( nextYear, nextMonth )">&gt;</div>' +
+                    '<div class="day-name-cell" data-ng-repeat="dayName in dayNames">{{ dayName }}</div>' +
+                    '<div class="filler-space" data-ng-repeat="space in filler"></div>' +
                     '<div class="date-cell" ' +
-                    'x-ng-class="{ today: dayNow == day && monthNow == month && yearNow == year }" ' +
-                    'x-ng-repeat="day in days" x-ng-click="applyDate( month + \'/\' + day + \'/\' + year )">' +
+                    'data-ng-class="{ today: dayNow == day && monthNow == month && yearNow == year }" ' +
+                    'data-ng-repeat="day in days" data-ng-click="applyDate( month + \'/\' + day + \'/\' + year )">' +
                     '{{ day }}</div></div>' );
                 $compile( template )( scope );
                 element.after( template );
@@ -96,9 +107,9 @@ angular.module( "vokal.datePicker", [] )
                     {
                         var startingYear, startingMonth;
 
-                        if( Date.parse( scope.dateValue ) )
+                        if( Date.parse( ngModelController.$modelValue ) )
                         {
-                            var dateStarting = new Date( scope.dateValue );
+                            var dateStarting = new Date( ngModelController.$modelValue );
                             startingYear     = dateStarting.getFullYear();
                             startingMonth    = dateStarting.getMonth() + 1;
                         }
@@ -126,27 +137,28 @@ angular.module( "vokal.datePicker", [] )
 
                 // Hide the picker when clicking away
                 angular.element( document.getElementsByTagName( "html" )[ 0 ] )
-                .on( "mousedown touchstart", function ( event )
-                {
-                    if( !scope.showDatepicker )
-                    {
-                        return;
-                    }
 
-                    for( var focusScope = angular.element( event.target ).scope();
-                            focusScope; focusScope = focusScope.$parent )
+                    .on( "mousedown touchstart", function ( event )
                     {
-                        if ( scope.$id === focusScope.$id )
+                        if( !scope.showDatepicker )
                         {
                             return;
                         }
-                    }
 
-                    scope.$apply( function ()
-                    {
-                        scope.showDatepicker = false;
+                        for( var focusScope = angular.element( event.target ).scope();
+                                focusScope; focusScope = focusScope.$parent )
+                        {
+                            if ( scope.$id === focusScope.$id )
+                            {
+                                return;
+                            }
+                        }
+
+                        scope.$apply( function ()
+                        {
+                            scope.showDatepicker = false;
+                        } );
                     } );
-                } );
 
             }
         };
