@@ -12,6 +12,8 @@ angular.module( "vokal.datePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
+                var defaultFormat = "M/d/yyyy";
+
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function( data )
                 {
@@ -20,7 +22,7 @@ angular.module( "vokal.datePicker", [] )
                     ngModelController.$setValidity( "date", !isNaN( dateData.getTime() ) );
 
                     return attrs.pickerType === "string" ?
-                        $filter( "date" )( dateData, attrs.datePicker || "M/d/yyyy" ) : dateData;
+                        $filter( "date" )( dateData, attrs.datePicker || defaultFormat ) : dateData;
                 } );
 
                 // Convert data from model to view format and validate
@@ -40,7 +42,7 @@ angular.module( "vokal.datePicker", [] )
                         ngModelController.$setValidity( "date", validDate );
                     }
 
-                    return validDate ? $filter( "date" )( dateData, attrs.datePicker || "M/d/yyyy" ) : data;
+                    return validDate ? $filter( "date" )( dateData, attrs.datePicker || defaultFormat ) : data;
                 } );
 
                 // Initialize
@@ -78,7 +80,7 @@ angular.module( "vokal.datePicker", [] )
                 scope.applyDate = function ( selectedDate )
                 {
                     var workingDate   = new Date( selectedDate );
-                    var formattedDate = $filter( "date" )( workingDate, attrs.datePicker || "M/d/yyyy" );
+                    var formattedDate = $filter( "date" )( workingDate, attrs.datePicker || defaultFormat );
 
                     ngModelController.$setViewValue( formattedDate );
                     ngModelController.$render();
@@ -148,7 +150,7 @@ angular.module( "vokal.datePicker", [] )
                         for( var focusScope = angular.element( event.target ).scope();
                                 focusScope; focusScope = focusScope.$parent )
                         {
-                            if ( scope.$id === focusScope.$id )
+                            if( scope.$id === focusScope.$id )
                             {
                                 return;
                             }

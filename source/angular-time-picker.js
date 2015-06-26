@@ -12,15 +12,21 @@ angular.module( "vokal.timePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
+                var defaultFormat = "h:mm a";
+                var prependDate   = function ( time )
+                {
+                    return new Date( "1/1/1990 " + time );
+                };
+
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function( data )
                 {
-                    var timeData = new Date( "1/1/1990 " + data );
+                    var timeData = prependDate( data );
 
                     ngModelController.$setValidity( "time", !isNaN( timeData.getTime() ) );
 
                     return attrs.pickerType === "string" ?
-                        $filter( "date" )( timeData, attrs.timePicker || "h:mm a" ) : timeData;
+                        $filter( "date" )( timeData, attrs.timePicker || defaultFormat ) : timeData;
                 } );
 
                 // Convert data from model to view format and validate
@@ -32,7 +38,7 @@ angular.module( "vokal.timePicker", [] )
                     {
                         if( typeof timeData.getTime !== "function" )
                         {
-                            timeData = new Date( "1/1/1990 " + timeData );
+                            timeData = prependDate( timeData );
                         }
 
                         validTime = !isNaN( timeData.getTime() );
@@ -40,7 +46,7 @@ angular.module( "vokal.timePicker", [] )
                         ngModelController.$setValidity( "time", validTime );
                     }
 
-                    return validTime ? $filter( "date" )( timeData, attrs.timePicker || "h:mm a" ) : data;
+                    return validTime ? $filter( "date" )( timeData, attrs.timePicker || defaultFormat ) : data;
                 } );
 
                 // Initialize
@@ -55,8 +61,8 @@ angular.module( "vokal.timePicker", [] )
                     for( var k = 0; k < 60; k += interval )
                     {
                         minute        = k < 10 ? "0" + k : k;
-                        workingTime   = new Date( "1/1/1990 " + i + ":" + minute );
-                        formattedTime = $filter( "date" )( workingTime, attrs.timePicker || "h:mm a" );
+                        workingTime   = prependDate( i + ":" + minute );
+                        formattedTime = $filter( "date" )( workingTime, attrs.timePicker || defaultFormat );
                         scope.times.push( formattedTime );
                     }
                 }
@@ -107,7 +113,7 @@ angular.module( "vokal.timePicker", [] )
                         for( var focusScope = angular.element( event.target ).scope();
                                 focusScope; focusScope = focusScope.$parent )
                         {
-                            if ( scope.$id === focusScope.$id )
+                            if( scope.$id === focusScope.$id )
                             {
                                 return;
                             }
