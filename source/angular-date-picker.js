@@ -6,43 +6,55 @@ angular.module( "vokal.datePicker", [] )
     {
         "use strict";
 
+        var defaultFormat = "M/d/yyyy";
+
+        function validateDate( date )
+        {
+            return date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
+        }
+        function convertToDate( str )
+        {
+            return validateDate( str ) ? str : new Date( str );
+        }
+
         return {
             restrict: "A",
-            scope: {},
+            scope: {
+                date: "=ngModel"
+            },
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var defaultFormat = "M/d/yyyy";
+                function filterOutput( date )
+                {
+                    return attrs.pickerType === "string" ?
+                        $filter( "date" )( date, attrs.datePicker || defaultFormat ) : date;
+                }
+                function newModelDate( date )
+                {
+                    return !scope.date ?
+                        filterOutput( date ) :
+                        filterOutput( new Date( date.toDateString() + " " + convertToDate( scope.date ).toTimeString() ) );
+                }
 
                 // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function( data )
+                ngModelController.$parsers.unshift( function( date )
                 {
-                    var dateData = new Date( data );
+                    date = new Date( date );
+                    var isValidDate = validateDate( date );
 
-                    ngModelController.$setValidity( "date", !isNaN( dateData.getTime() ) );
-
-                    return attrs.pickerType === "string" ?
-                        $filter( "date" )( dateData, attrs.datePicker || defaultFormat ) : dateData;
+                    ngModelController.$setValidity( "date", isValidDate );
+                    return isValidDate ? newModelDate( date ) : scope.date;
                 } );
 
                 // Convert data from model to view format and validate
-                ngModelController.$formatters.push( function( data )
+                ngModelController.$formatters.push( function( model )
                 {
-                    var validDate, dateData = data;
+                    var date = convertToDate( model );
+                    var isValidDate = validateDate( date );
+                    ngModelController.$setValidity( "date", isValidDate );
 
-                    if( dateData )
-                    {
-                        if( typeof dateData.getTime !== "function" )
-                        {
-                            dateData = new Date( dateData );
-                        }
-
-                        validDate = !isNaN( dateData.getTime() );
-
-                        ngModelController.$setValidity( "date", validDate );
-                    }
-
-                    return validDate ? $filter( "date" )( dateData, attrs.datePicker || defaultFormat ) : data;
+                    return isValidDate ? $filter( "date" )( date, attrs.datePicker || defaultFormat ) : model;
                 } );
 
                 // Initialize
