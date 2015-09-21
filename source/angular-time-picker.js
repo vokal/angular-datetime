@@ -35,13 +35,8 @@ angular.module( "vokal.timePicker", [] )
                     return attrs.pickerType === "string" ?
                         $filter( "date" )( date, attrs.timePicker || defaultFormat ) : date;
                 }
-                function newModelDate( time )
+                function newModelTime( time )
                 {
-                    if( !time )
-                    {
-                        return scope.date;
-                    }
-
                     return !scope.date ?
                         filterOutput( new Date( defaultDateStr + time ) ) :
                         filterOutput( new Date( convertToDate( scope.date ).toDateString() + " " + time ) );
@@ -53,7 +48,7 @@ angular.module( "vokal.timePicker", [] )
                     var isValidTime = validateTime( time );
                     ngModelController.$setValidity( "time", isValidTime );
 
-                    return isValidTime ? newModelDate( time ) : scope.date;
+                    return isValidTime ? newModelTime( time ) : scope.date;
                 } );
 
                 // Convert data from model to view format and validate
