@@ -6,47 +6,59 @@ angular.module( "vokal.timePicker", [] )
     {
         "use strict";
 
+        var defaultFormat = "h:mm a";
+        var defaultDateStr = "1/1/1990" + " ";
+
+        function validateTime( time )
+        {
+            return !!time && angular.isString( time ) && !isNaN( new Date( defaultDateStr + time ).getTime() );
+        }
+        function validateDate( date )
+        {
+            return !!date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
+        }
+        function convertToDate( str )
+        {
+            return validateDate( str ) ? str : new Date( str );
+        }
+
         return {
             restrict: "A",
-            scope: {},
+            scope: {
+                date: "=ngModel"
+            },
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var defaultFormat = "h:mm a";
-                var prependDate   = function ( time )
+                function filterOutput( date )
                 {
-                    return new Date( "1/1/1990 " + time );
-                };
+                    return attrs.pickerType === "string" ?
+                        $filter( "date" )( date, attrs.timePicker || defaultFormat ) : date;
+                }
+                function newModelTime( time )
+                {
+                    return !scope.date ?
+                        filterOutput( new Date( defaultDateStr + time ) ) :
+                        filterOutput( new Date( convertToDate( scope.date ).toDateString() + " " + time ) );
+                }
 
                 // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function( data )
+                ngModelController.$parsers.unshift( function( time )
                 {
-                    var timeData = prependDate( data );
+                    var isValidTime = validateTime( time );
+                    ngModelController.$setValidity( "time", isValidTime );
 
-                    ngModelController.$setValidity( "time", !isNaN( timeData.getTime() ) );
-
-                    return attrs.pickerType === "string" ?
-                        $filter( "date" )( timeData, attrs.timePicker || defaultFormat ) : timeData;
+                    return isValidTime ? newModelTime( time ) : scope.date;
                 } );
 
                 // Convert data from model to view format and validate
-                ngModelController.$formatters.push( function( data )
+                ngModelController.$formatters.push( function( model )
                 {
-                    var validTime, timeData = data;
+                    var date = convertToDate( model );
+                    var isValidDate = validateDate( date );
+                    ngModelController.$setValidity( "time", isValidDate );
 
-                    if( timeData )
-                    {
-                        if( typeof timeData.getTime !== "function" )
-                        {
-                            timeData = prependDate( timeData );
-                        }
-
-                        validTime = !isNaN( timeData.getTime() );
-
-                        ngModelController.$setValidity( "time", validTime );
-                    }
-
-                    return validTime ? $filter( "date" )( timeData, attrs.timePicker || defaultFormat ) : data;
+                    return isValidDate ? $filter( "date" )( date, attrs.timePicker || defaultFormat ) : model;
                 } );
 
                 // Initialize
@@ -61,7 +73,7 @@ angular.module( "vokal.timePicker", [] )
                     for( var k = 0; k < 60; k += interval )
                     {
                         minute        = k < 10 ? "0" + k : k;
-                        workingTime   = prependDate( i + ":" + minute );
+                        workingTime   = new Date( defaultDateStr + i + ":" + minute );
                         formattedTime = $filter( "date" )( workingTime, attrs.timePicker || defaultFormat );
                         scope.times.push( formattedTime );
                     }
