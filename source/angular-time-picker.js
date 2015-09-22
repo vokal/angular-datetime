@@ -123,10 +123,10 @@ angular.module( "vokal.timePicker", [] )
                         } );
                     }
                 };
-                $document.on( "mousedown touchstart", handler );
+                $document.on( "click touchstart", handler );
                 scope.$on( "$destroy", function ()
                 {
-                    $document.off( "mousedown touchstart", handler );
+                    $document.off( "click touchstart", handler );
                 } );
             }
         };
