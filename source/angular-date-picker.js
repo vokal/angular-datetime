@@ -1,8 +1,8 @@
 angular.module( "vokal.datePicker", [] )
 
-.directive( "datePicker", [ "$compile", "$filter",
+.directive( "datePicker", [ "$compile", "$filter", "$document",
 
-    function ( $compile, $filter )
+    function ( $compile, $filter, $document )
     {
         "use strict";
 
