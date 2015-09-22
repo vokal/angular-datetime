@@ -10,7 +10,7 @@ angular.module( "vokal.datePicker", [] )
 
         function validateDate( date )
         {
-            return date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
+            return !!date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
         }
         function convertToDate( str )
         {
