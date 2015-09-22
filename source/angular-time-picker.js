@@ -1,8 +1,8 @@
 angular.module( "vokal.timePicker", [] )
 
-.directive( "timePicker", [ "$compile", "$filter",
+.directive( "timePicker", [ "$compile", "$filter", "$document",
 
-    function ( $compile, $filter )
+    function ( $compile, $filter, $document )
     {
         "use strict";
 
@@ -113,30 +113,21 @@ angular.module( "vokal.timePicker", [] )
                 } );
 
                 // Hide the picker when clicking away
-                angular.element( document.getElementsByTagName( "html" )[ 0 ] )
-
-                    .on( "mousedown touchstart", function ( event )
+                var handler = function ( event )
+                {
+                    if( !element[ 0 ].contains( event.target ) )
                     {
-                        if( !scope.showTimepicker )
-                        {
-                            return;
-                        }
-
-                        for( var focusScope = angular.element( event.target ).scope();
-                                focusScope; focusScope = focusScope.$parent )
-                        {
-                            if( scope.$id === focusScope.$id )
-                            {
-                                return;
-                            }
-                        }
-
                         scope.$apply( function ()
                         {
                             scope.showTimepicker = false;
                         } );
-                    } );
-
+                    }
+                };
+                $document.on( "click touchstart", handler );
+                scope.$on( "$destroy", function ()
+                {
+                    $document.off( "click touchstart", handler );
+                } );
             }
         };
     }

@@ -1,8 +1,8 @@
 angular.module( "vokal.datePicker", [] )
 
-.directive( "datePicker", [ "$compile", "$filter",
+.directive( "datePicker", [ "$compile", "$filter", "$document",
 
-    function ( $compile, $filter )
+    function ( $compile, $filter, $document )
     {
         "use strict";
 
@@ -150,30 +150,21 @@ angular.module( "vokal.datePicker", [] )
                 } );
 
                 // Hide the picker when clicking away
-                angular.element( document.getElementsByTagName( "html" )[ 0 ] )
-
-                    .on( "mousedown touchstart", function ( event )
+                var handler = function ( event )
+                {
+                    if( !element[ 0 ].contains( event.target ) )
                     {
-                        if( !scope.showDatepicker )
-                        {
-                            return;
-                        }
-
-                        for( var focusScope = angular.element( event.target ).scope();
-                                focusScope; focusScope = focusScope.$parent )
-                        {
-                            if( scope.$id === focusScope.$id )
-                            {
-                                return;
-                            }
-                        }
-
                         scope.$apply( function ()
                         {
                             scope.showDatepicker = false;
                         } );
-                    } );
-
+                    }
+                };
+                $document.on( "click touchstart", handler );
+                scope.$on( "$destroy", function ()
+                {
+                    $document.off( "click touchstart", handler );
+                } );
             }
         };
     }
