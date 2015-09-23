@@ -24,12 +24,11 @@ angular.module( "vokal.timePicker", [] )
 
         return {
             restrict: "A",
-            scope: {
-                date: "=ngModel"
-            },
+            scope: {},
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
+                var localDate = new Date( new Date().toDateString() );
                 function filterOutput( date )
                 {
                     return attrs.pickerType === "string" ?
@@ -37,9 +36,7 @@ angular.module( "vokal.timePicker", [] )
                 }
                 function newModelTime( time )
                 {
-                    return !scope.date ?
-                        filterOutput( new Date( defaultDateStr + time ) ) :
-                        filterOutput( new Date( convertToDate( scope.date ).toDateString() + " " + time ) );
+                    return new Date( localDate.toDateString() + " " + time );
                 }
 
                 // Convert data from view to model format and validate
@@ -48,7 +45,12 @@ angular.module( "vokal.timePicker", [] )
                     var isValidTime = validateTime( time );
                     ngModelController.$setValidity( "time", isValidTime );
 
-                    return isValidTime ? newModelTime( time ) : scope.date;
+                    if( isValidTime )
+                    {
+                        localDate = newModelTime( time )
+                    }
+
+                    return filterOutput( localDate );
                 } );
 
                 // Convert data from model to view format and validate
@@ -57,6 +59,11 @@ angular.module( "vokal.timePicker", [] )
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
                     ngModelController.$setValidity( "time", isValidDate );
+
+                    if( isValidDate )
+                    {
+                        localDate = angular.copy( date );
+                    }
 
                     return isValidDate ? $filter( "date" )( date, attrs.timePicker || defaultFormat ) : model;
                 } );
