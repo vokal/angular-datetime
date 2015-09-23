@@ -118,7 +118,7 @@ angular.module( "vokal.timePicker", [] )
                         $timeout( function ()
                         {
                             $document.on( "click touchstart", handler );
-                        }, 50 );
+                        }, 100 );
                     }
                 }
                 function hidePicker()

@@ -139,7 +139,7 @@ angular.module( "vokal.datePicker", [] )
                         $timeout( function ()
                         {
                             $document.on( "click touchstart", handler );
-                        }, 50 );
+                        }, 100 );
                     }
 
                 } );
