@@ -19,12 +19,11 @@ angular.module( "vokal.datePicker", [] )
 
         return {
             restrict: "A",
-            scope: {
-                date: "=ngModel"
-            },
+            scope: {},
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
+                var localDate = new Date( new Date().toDateString() );
                 function filterOutput( date )
                 {
                     return attrs.pickerType === "string" ?
@@ -32,19 +31,22 @@ angular.module( "vokal.datePicker", [] )
                 }
                 function newModelDate( date )
                 {
-                    return !scope.date ?
-                        filterOutput( date ) :
-                        filterOutput( new Date( date.toDateString() + " " + convertToDate( scope.date ).toTimeString() ) );
+                    return new Date( date.toDateString() + " " + localDate.toTimeString() );
                 }
 
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function( date )
                 {
-                    date = new Date( date );
+                    date = convertToDate( date );
                     var isValidDate = validateDate( date );
-
                     ngModelController.$setValidity( "date", isValidDate );
-                    return isValidDate ? newModelDate( date ) : scope.date;
+
+                    if( isValidDate )
+                    {
+                        localDate = newModelDate( date );
+                    }
+
+                    return filterOutput( localDate );
                 } );
 
                 // Convert data from model to view format and validate
@@ -53,6 +55,11 @@ angular.module( "vokal.datePicker", [] )
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
                     ngModelController.$setValidity( "date", isValidDate );
+
+                    if( isValidDate )
+                    {
+                        localDate = angular.copy( date );
+                    }
 
                     return isValidDate ? $filter( "date" )( date, attrs.datePicker || defaultFormat ) : model;
                 } );
