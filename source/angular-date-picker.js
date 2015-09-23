@@ -1,8 +1,8 @@
 angular.module( "vokal.datePicker", [] )
 
-.directive( "datePicker", [ "$compile", "$filter", "$document",
+.directive( "datePicker", [ "$compile", "$filter", "$document", "$timeout",
 
-    function ( $compile, $filter, $document )
+    function ( $compile, $filter, $document, $timeout )
     {
         "use strict";
 
@@ -96,7 +96,7 @@ angular.module( "vokal.datePicker", [] )
 
                     ngModelController.$setViewValue( formattedDate );
                     ngModelController.$render();
-                    scope.showDatepicker = false;
+                    hidePicker();
                 };
 
                 // Build picker template and register with the directive scope
@@ -117,7 +117,7 @@ angular.module( "vokal.datePicker", [] )
                 // Show the picker when clicking in the input
                 element.on( "click", function ()
                 {
-                    scope.$apply( function ()
+                    if( !scope.showDatepicker )
                     {
                         var startingYear, startingMonth;
 
@@ -136,35 +136,31 @@ angular.module( "vokal.datePicker", [] )
                         scope.buildMonth( startingYear, startingMonth );
 
                         scope.showDatepicker = true;
-                    } );
+                        $timeout( function ()
+                        {
+                            $document.on( "click touchstart", handler );
+                        }, 50 );
+                    }
 
                 } );
 
                 // Hide the picker when typing in the field
-                element.on( "keydown paste", function ()
-                {
-                    scope.$apply( function ()
-                    {
-                        scope.showDatepicker = false;
-                    } );
-                } );
+                element.on( "keydown paste", hidePicker );
+                scope.$on( "$destroy", hidePicker );
 
                 // Hide the picker when clicking away
                 var handler = function ( event )
                 {
-                    if( !element[ 0 ].contains( event.target ) )
+                    if( !template[ 0 ].contains( event.target ) )
                     {
-                        scope.$apply( function ()
-                        {
-                            scope.showDatepicker = false;
-                        } );
+                        scope.$apply( hidePicker );
                     }
                 };
-                $document.on( "click touchstart", handler );
-                scope.$on( "$destroy", function ()
+                function hidePicker()
                 {
                     $document.off( "click touchstart", handler );
-                } );
+                    scope.showDatepicker = false;
+                }
             }
         };
     }

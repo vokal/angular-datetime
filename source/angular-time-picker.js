@@ -1,8 +1,8 @@
 angular.module( "vokal.timePicker", [] )
 
-.directive( "timePicker", [ "$compile", "$filter", "$document",
+.directive( "timePicker", [ "$compile", "$filter", "$document", "$timeout",
 
-    function ( $compile, $filter, $document )
+    function ( $compile, $filter, $document, $timeout )
     {
         "use strict";
 
@@ -83,7 +83,7 @@ angular.module( "vokal.timePicker", [] )
                 {
                     ngModelController.$setViewValue( selectedTime );
                     ngModelController.$render();
-                    scope.showTimepicker = false;
+                    hidePicker();
                 };
 
                 // Build picker template and register with the directive scope
@@ -95,39 +95,37 @@ angular.module( "vokal.timePicker", [] )
                 element.after( template );
 
                 // Show the picker when clicking in the input
-                element.on( "click", function ()
-                {
-                    scope.$apply( function ()
-                    {
-                        scope.showTimepicker = true;
-                    } );
-                } );
+                element.on( "click", showPicker );
 
                 // Hide the picker when typing in the field
-                element.on( "keydown paste", function ()
-                {
-                    scope.$apply( function ()
-                    {
-                        scope.showTimepicker = false;
-                    } );
-                } );
+                element.on( "keydown paste", hidePicker );
+                scope.$on( "$destroy", hidePicker );
 
                 // Hide the picker when clicking away
                 var handler = function ( event )
                 {
-                    if( !element[ 0 ].contains( event.target ) )
+                    if( !template[ 0 ].contains( event.target ) )
                     {
-                        scope.$apply( function ()
-                        {
-                            scope.showTimepicker = false;
-                        } );
+                        scope.$apply( hidePicker );
                     }
                 };
-                $document.on( "click touchstart", handler );
-                scope.$on( "$destroy", function ()
+
+                function showPicker()
+                {
+                    if( !scope.showTimepicker )
+                    {
+                        scope.showTimepicker = true;
+                        $timeout( function ()
+                        {
+                            $document.on( "click touchstart", handler );
+                        }, 50 );
+                    }
+                }
+                function hidePicker()
                 {
                     $document.off( "click touchstart", handler );
-                } );
+                    scope.showTimepicker = false;
+                }
             }
         };
     }
