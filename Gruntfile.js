@@ -1,4 +1,4 @@
-module.exports = function( grunt )
+module.exports = function ( grunt )
 {
     "use strict";
 
@@ -13,6 +13,23 @@ module.exports = function( grunt )
                 files: {
                     "dist/angular-date-picker.css": "source/angular-date-picker.less",
                     "dist/angular-time-picker.css": "source/angular-time-picker.less"
+                }
+            }
+        },
+
+        umd: {
+            date: {
+                options: {
+                    src: "source/angular-date-picker.js",
+                    dest: "dist/angular-date-picker.js",
+                    amdModuleId: "angular-date-picker"
+                }
+            },
+            time: {
+                options: {
+                    src: "source/angular-time-picker.js",
+                    dest: "dist/angular-time-picker.js",
+                    amdModuleId: "angular-time-picker"
                 }
             }
         },
@@ -41,5 +58,6 @@ module.exports = function( grunt )
     // Load plugins
     grunt.loadNpmTasks( "grunt-contrib-less" );
     grunt.loadNpmTasks( "grunt-contrib-uglify" );
+    grunt.loadNpmTasks( "grunt-umd" );
 
 };
