@@ -47,8 +47,8 @@ module.exports = function ( grunt )
             {
                 files:
                 {
-                    "dist/angular-date-picker.min.js": "source/angular-date-picker.js",
-                    "dist/angular-time-picker.min.js": "source/angular-time-picker.js"
+                    "dist/angular-date-picker.min.js": "dist/angular-date-picker.js",
+                    "dist/angular-time-picker.min.js": "dist/angular-time-picker.js"
                 }
             }
         },
