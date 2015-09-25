@@ -3,6 +3,7 @@
   "version": "2.1.4",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
+  "main": "dist/index.js",
   "bugs": {
     "url": "http://github.com/vokal/angular-datetime/issues"
   },
@@ -17,13 +18,14 @@
     "url": "http://github.com/vokal/angular-datetime"
   },
   "scripts": {
-    "dist": "grunt less && grunt umd && grunt uglify"
+    "dist": "grunt dist"
   },
   "license": "MIT",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-less": "^0.11.4",
     "grunt-contrib-uglify": "^0.8.0",
-    "grunt-umd": "^2.3.3"
+    "grunt-umd": "^2.3.3",
+    "grunt-contrib-copy": "^0.8.1"
   }
 }

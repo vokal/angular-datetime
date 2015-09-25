@@ -51,6 +51,13 @@ module.exports = function ( grunt )
                     "dist/angular-time-picker.min.js": "source/angular-time-picker.js"
                 }
             }
+        },
+
+        copy: {
+            dist: {
+                src: "source/index.js",
+                dest: "dist/index.js"
+            }
         }
 
     } );
@@ -58,6 +65,9 @@ module.exports = function ( grunt )
     // Load plugins
     grunt.loadNpmTasks( "grunt-contrib-less" );
     grunt.loadNpmTasks( "grunt-contrib-uglify" );
+    grunt.loadNpmTasks( "grunt-contrib-copy" );
     grunt.loadNpmTasks( "grunt-umd" );
+
+    grunt.registerTask( "dist", [ "less", "umd", "copy", "uglify" ] );
 
 };
