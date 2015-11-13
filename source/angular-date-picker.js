@@ -37,9 +37,10 @@ angular.module( "vokal.datePicker", [] )
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function ( date )
                 {
+                    var empty = !date;
                     date = convertToDate( date );
                     var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", isValidDate );
+                    ngModelController.$setValidity( "date", empty || isValidDate );
 
                     if( isValidDate )
                     {
@@ -52,9 +53,10 @@ angular.module( "vokal.datePicker", [] )
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function ( model )
                 {
+                    var empty = !model;
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", isValidDate );
+                    ngModelController.$setValidity( "date", empty || isValidDate );
 
                     if( isValidDate )
                     {

@@ -51,11 +51,12 @@ angular.module( "vokal.datePicker", [] )
                 }
 
                 // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function( date )
+                ngModelController.$parsers.unshift( function ( date )
                 {
+                    var empty = !date;
                     date = convertToDate( date );
                     var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", isValidDate );
+                    ngModelController.$setValidity( "date", empty || isValidDate );
 
                     if( isValidDate )
                     {
@@ -66,11 +67,12 @@ angular.module( "vokal.datePicker", [] )
                 } );
 
                 // Convert data from model to view format and validate
-                ngModelController.$formatters.push( function( model )
+                ngModelController.$formatters.push( function ( model )
                 {
+                    var empty = !model;
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", isValidDate );
+                    ngModelController.$setValidity( "date", empty || isValidDate );
 
                     if( isValidDate )
                     {
@@ -107,8 +109,14 @@ angular.module( "vokal.datePicker", [] )
                     var daysInMonth = 32 - new Date( year, month - 1, 32 ).getDate();
                     var firstDay    = new Date( year, month - 1, 1 ).getDay();
 
-                    for( var i = 1; i <= daysInMonth; i++ ) { scope.days.push( i ); }
-                    for( var k = 0; k < firstDay; k++ ) { scope.filler.push( k ); }
+                    for( var i = 1; i <= daysInMonth; i++ )
+                    {
+                        scope.days.push( i );
+                    }
+                    for( var k = 0; k < firstDay; k++ )
+                    {
+                        scope.filler.push( k );
+                    }
                 };
 
                 // Function to put selected date in the scope
@@ -133,7 +141,7 @@ angular.module( "vokal.datePicker", [] )
                     '<div class="date-cell" ' +
                     'data-ng-class="{ today: dayNow == day && monthNow == month && yearNow == year }" ' +
                     'data-ng-repeat="day in days" data-ng-click="applyDate( month + \'/\' + day + \'/\' + year )">' +
-                    '{{ day }}</div></div>' );
+                    "{{ day }}</div></div>" );
                 $compile( template )( scope );
                 element.after( template );
 

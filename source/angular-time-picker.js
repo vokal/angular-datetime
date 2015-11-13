@@ -42,8 +42,9 @@ angular.module( "vokal.timePicker", [] )
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function ( time )
                 {
+                    var empty = !time;
                     var isValidTime = validateTime( time );
-                    ngModelController.$setValidity( "time", isValidTime );
+                    ngModelController.$setValidity( "time", empty || isValidTime );
 
                     if( isValidTime )
                     {
@@ -56,9 +57,10 @@ angular.module( "vokal.timePicker", [] )
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function ( model )
                 {
+                    var empty = !model;
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "time", isValidDate );
+                    ngModelController.$setValidity( "time", empty || isValidDate );
 
                     if( isValidDate )
                     {
