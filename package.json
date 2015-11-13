@@ -1,6 +1,6 @@
 {
   "name": "angular-datetime",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
   "main": "dist/index.js",
