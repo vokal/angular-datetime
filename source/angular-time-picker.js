@@ -40,21 +40,21 @@ angular.module( "vokal.timePicker", [] )
                 }
 
                 // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function( time )
+                ngModelController.$parsers.unshift( function ( time )
                 {
                     var isValidTime = validateTime( time );
                     ngModelController.$setValidity( "time", isValidTime );
 
                     if( isValidTime )
                     {
-                        localDate = newModelTime( time )
+                        localDate = newModelTime( time );
                     }
 
                     return filterOutput( localDate );
                 } );
 
                 // Convert data from model to view format and validate
-                ngModelController.$formatters.push( function( model )
+                ngModelController.$formatters.push( function ( model )
                 {
                     var date = convertToDate( model );
                     var isValidDate = validateDate( date );
@@ -97,7 +97,7 @@ angular.module( "vokal.timePicker", [] )
                 var template = angular.element(
                     '<ol class="time-picker" data-ng-show="showTimepicker">' +
                     '<li data-ng-repeat="time in times" data-ng-click="applyTime( time )">' +
-                    '{{ time }}</li></ol>' );
+                    "{{ time }}</li></ol>" );
                 $compile( template )( scope );
                 element.after( template );
 
