@@ -1,4 +1,18 @@
 {
+    "disallowSpaceAfterKeywords": [
+        "do",
+        "for",
+        "if",
+        "else",
+        "switch",
+        "try",
+        "catch",
+        "finally",
+        "void",
+        "while",
+        "with",
+        "typeof"
+    ],
     "disallowSpaceAfterPrefixUnaryOperators": true,
     "disallowSpaceBeforePostfixUnaryOperators": true,
     "disallowSpaceBeforeComma": true,
