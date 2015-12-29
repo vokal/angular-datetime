@@ -15,5 +15,8 @@
   "ignore": [
     "Gruntfile.js",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "moment": "~2.10.6"
+  }
 }

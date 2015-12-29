@@ -22,15 +22,11 @@ angular.module( "vokal.datePicker", [] )
     {
         "use strict";
 
-        var defaultFormat = "M/d/yyyy";
+        var defaultFormat = "M/D/YYYY";
 
-        function validateDate( date )
+        function validateDate( dateOrString )
         {
-            return !!date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
-        }
-        function convertToDate( str )
-        {
-            return validateDate( str ) ? str : new Date( str );
+            return !!dateOrString && moment( new Date( dateOrString ) ).isValid();
         }
 
         return {
@@ -39,47 +35,57 @@ angular.module( "vokal.datePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var localDate = new Date( new Date().toDateString() );
-                function filterOutput( date )
+                var localMoment = moment();
+
+                function filterForModel()
                 {
                     return attrs.pickerType === "string" ?
-                        $filter( "date" )( date, attrs.datePicker || defaultFormat ) : date;
+                        filterForRender( localMoment ) :
+                        localMoment.toDate();
                 }
-                function newModelDate( date )
+                function filterForRender( dateMoment )
                 {
-                    return new Date( date.toDateString() + " " + localDate.toTimeString() );
+                    return dateMoment.format( attrs.datePicker || defaultFormat );
                 }
 
-                // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function ( date )
+                function newLocalMoment( dateMoment )
                 {
-                    var empty = !date;
-                    date = convertToDate( date );
-                    var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", empty || isValidDate );
+                    return moment(
+                        // Preserve local time
+                        new Date( dateMoment.toDate().toDateString() + " " + localMoment.toDate().toTimeString() )
+                    );
+                }
+
+
+                // Convert data from view to model format and validate
+                ngModelController.$parsers.unshift( function ( str )
+                {
+                    var isEmpty = !str;
+                    var isValidDate = validateDate( str );
+                    ngModelController.$setValidity( "date", isEmpty || isValidDate );
 
                     if( isValidDate )
                     {
-                        localDate = newModelDate( date );
+                        localMoment = newLocalMoment( moment( new Date( str ) ) );
                     }
 
-                    return filterOutput( localDate );
+                    return filterForModel();
                 } );
 
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function ( model )
                 {
-                    var empty = !model;
-                    var date = convertToDate( model );
-                    var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "date", empty || isValidDate );
+                    var isEmpty = !model;
+                    var isValidDate = validateDate( model );
+                    ngModelController.$setValidity( "date", isEmpty || isValidDate );
 
                     if( isValidDate )
                     {
-                        localDate = angular.copy( date );
+                        localMoment = moment( new Date( model ) );
+                        return filterForRender( localMoment );
                     }
 
-                    return isValidDate ? $filter( "date" )( date, attrs.datePicker || defaultFormat ) : model;
+                    return model;
                 } );
 
                 // Initialize
@@ -122,9 +128,7 @@ angular.module( "vokal.datePicker", [] )
                 // Function to put selected date in the scope
                 scope.applyDate = function ( selectedDate )
                 {
-                    var workingDate   = new Date( selectedDate );
-                    var formattedDate = $filter( "date" )( workingDate, attrs.datePicker || defaultFormat );
-
+                    var formattedDate = filterForRender( moment( selectedDate, "MM/DD/YYYY" ) );
                     ngModelController.$setViewValue( formattedDate );
                     ngModelController.$render();
                     hidePicker();
