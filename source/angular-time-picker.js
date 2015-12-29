@@ -9,17 +9,13 @@ angular.module( "vokal.timePicker", [] )
         var defaultFormat = "h:mm a";
         var defaultDateStr = "1/1/1990" + " ";
 
-        function validateTime( time )
+        function validateTime( timeStr )
         {
-            return !!time && angular.isString( time ) && !isNaN( new Date( defaultDateStr + time ).getTime() );
+            return !!timeStr && moment( new Date( defaultDateStr + timeStr ) ).isValid();
         }
-        function validateDate( date )
+        function validateDate( dateOrString )
         {
-            return !!date && angular.isFunction( date.getTime ) && !isNaN( date.getTime() );
-        }
-        function convertToDate( str )
-        {
-            return validateDate( str ) ? str : new Date( str );
+            return !!dateOrString && moment( new Date( dateOrString ) ).isValid();
         }
 
         return {
@@ -28,46 +24,58 @@ angular.module( "vokal.timePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var localDate = new Date( new Date().toDateString() );
-                function filterOutput( date )
+                var localMoment = moment();
+
+                function filterForModel()
                 {
                     return attrs.pickerType === "string" ?
-                        $filter( "date" )( date, attrs.timePicker || defaultFormat ) : date;
+                        filterForRender( localMoment ) :
+                        localMoment.toDate();
                 }
-                function newModelTime( time )
+                function filterForRender( dateMoment )
                 {
-                    return new Date( localDate.toDateString() + " " + time );
+                    return dateMoment.format( attrs.timePicker || defaultFormat );
+                }
+
+                function newLocalMoment( timeStr )
+                {
+                    return moment(
+                        // Preserve local date
+                        new Date( localMoment.toDate().toDateString() + " " + timeStr )
+                    );
                 }
 
                 // Convert data from view to model format and validate
-                ngModelController.$parsers.unshift( function ( time )
+                ngModelController.$parsers.unshift( function ( str )
                 {
-                    var empty = !time;
-                    var isValidTime = validateTime( time );
-                    ngModelController.$setValidity( "time", empty || isValidTime );
+                    var isEmpty = !str;
+                    var isValidTime = validateTime( str );
+                    ngModelController.$setValidity( "time", isEmpty || isValidTime );
 
                     if( isValidTime )
                     {
-                        localDate = newModelTime( time );
+                        localMoment = newLocalMoment( str );
                     }
 
-                    return filterOutput( localDate );
+                    return filterForModel();
                 } );
 
                 // Convert data from model to view format and validate
                 ngModelController.$formatters.push( function ( model )
                 {
-                    var empty = !model;
-                    var date = convertToDate( model );
-                    var isValidDate = validateDate( date );
-                    ngModelController.$setValidity( "time", empty || isValidDate );
+                    var isEmpty = !model;
+                    var isValidDate = validateDate( model );
+                    var isValidTime = isValidDate || validateTime( model );
 
-                    if( isValidDate )
+                    ngModelController.$setValidity( "time", isEmpty || isValidDate || isValidTime );
+
+                    if( isValidTime )
                     {
-                        localDate = angular.copy( date );
+                        localMoment = isValidDate ? moment( new Date( model ) ) : newLocalMoment( model );
+                        return filterForRender( localMoment );
                     }
 
-                    return isValidDate ? $filter( "date" )( date, attrs.timePicker || defaultFormat ) : model;
+                    return model;
                 } );
 
                 // Initialize
@@ -83,7 +91,7 @@ angular.module( "vokal.timePicker", [] )
                     {
                         minute        = k < 10 ? "0" + k : k;
                         workingTime   = new Date( defaultDateStr + i + ":" + minute );
-                        formattedTime = $filter( "date" )( workingTime, attrs.timePicker || defaultFormat );
+                        formattedTime = filterForRender( moment( workingTime ) );
                         scope.times.push( formattedTime );
                     }
                 }
