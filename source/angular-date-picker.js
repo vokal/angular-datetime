@@ -15,11 +15,18 @@ angular.module( "vokal.datePicker", [] )
 
         return {
             restrict: "A",
-            scope: {},
+            scope: {
+                model: "=ngModel",
+                timezone: "="
+            },
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var localMoment = moment();
+                if( scope.timezone && !moment.tz )
+                {
+                    console.warn( "Trying to use moment-timezone without including the script." );
+                }
+                var localMoment = scope.timezone ? moment.tz() : moment();
 
                 function filterForModel()
                 {
@@ -32,14 +39,30 @@ angular.module( "vokal.datePicker", [] )
                     return dateMoment.format( attrs.datePicker || defaultFormat );
                 }
 
-                function newLocalMoment( dateMoment )
+                function setLocalDate( month, day, year )
                 {
-                    return moment(
-                        // Preserve local time
-                        new Date( dateMoment.toDate().toDateString() + " " + localMoment.toDate().toTimeString() )
-                    );
+                    if( moment.isDate( month ) )
+                    {
+                        localMoment = moment( month );
+                        if( scope.timezone )
+                        {
+                            localMoment.tz( scope.timezone );
+                        }
+                        return;
+                    }
+                    localMoment.set( { "month": month, "date": day, "year": year } );
                 }
-
+                if( attrs.timezone )
+                {
+                    scope.$watch( "timezone", function ( newVal, oldVal )
+                    {
+                        if( newVal !== oldVal )
+                        {
+                            localMoment.tz( newVal || moment.tz.guess() );
+                            scope.model = filterForModel();
+                        }
+                    } );
+                }
 
                 // Convert data from view to model format and validate
                 ngModelController.$parsers.unshift( function ( str )
@@ -50,7 +73,8 @@ angular.module( "vokal.datePicker", [] )
 
                     if( isValidDate )
                     {
-                        localMoment = newLocalMoment( moment( new Date( str ) ) );
+                        var m = moment( new Date( str ) );
+                        setLocalDate( m.month(), m.date(), m.years() );
                     }
 
                     return filterForModel();
@@ -65,7 +89,7 @@ angular.module( "vokal.datePicker", [] )
 
                     if( isValidDate )
                     {
-                        localMoment = moment( new Date( model ) );
+                        setLocalDate( new Date( model ) );
                         return filterForRender( localMoment );
                     }
 
@@ -73,31 +97,30 @@ angular.module( "vokal.datePicker", [] )
                 } );
 
                 // Initialize
+                var now = moment();
                 scope.showDatepicker = false;
-                var dateNow    = new Date();
-                scope.dayNow   = dateNow.getDate();
-                scope.monthNow = dateNow.getMonth() + 1;
-                scope.yearNow  = dateNow.getFullYear();
+                scope.dayNow   = now.date();
+                scope.monthNow = now.month();
+                scope.yearNow  = now.year();
                 scope.dayNames = [ "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" ];
 
                 // Build a month of days based on the date passed in
                 scope.buildMonth = function ( year, month )
                 {
+                    var m = moment( { year: year, month: month } );
                     scope.days      = [];
                     scope.filler    = [];
                     scope.year      = year;
                     scope.month     = month;
-                    scope.monthName = $filter( "date" )(
-                        year + "-" + ( month < 10 ? "0" : "" ) + month + "-01", "MMMM"
-                    );
+                    scope.monthName = m.format( "MMMM" );
 
-                    scope.prevYear  = month - 1 < 1  ? year - 1 : year;
-                    scope.nextYear  = month + 1 > 12 ? year + 1 : year;
-                    scope.prevMonth = month - 1 < 1  ? 12       : month - 1;
-                    scope.nextMonth = month + 1 > 12 ? 1        : month + 1;
+                    scope.prevYear  = month - 1 < 0  ? year - 1 : year;
+                    scope.nextYear  = month + 1 > 11 ? year + 1 : year;
+                    scope.prevMonth = month - 1 < 0  ? 11       : month - 1;
+                    scope.nextMonth = month + 1 > 11 ? 0        : month + 1;
 
-                    var daysInMonth = 32 - new Date( year, month - 1, 32 ).getDate();
-                    var firstDay    = new Date( year, month - 1, 1 ).getDay();
+                    var daysInMonth = m.daysInMonth();
+                    var firstDay    = m.day();
 
                     for( var i = 1; i <= daysInMonth; i++ )
                     {
@@ -110,11 +133,11 @@ angular.module( "vokal.datePicker", [] )
                 };
 
                 // Function to put selected date in the scope
-                scope.applyDate = function ( selectedDate )
+                scope.applyDate = function ( month, day, year )
                 {
-                    var formattedDate = filterForRender( moment( selectedDate, "MM/DD/YYYY" ) );
-                    ngModelController.$setViewValue( formattedDate );
-                    ngModelController.$render();
+                    setLocalDate( month, day, year );
+                    scope.model = filterForModel();
+                    ngModelController.$setDirty();
                     hidePicker();
                 };
 
@@ -128,7 +151,7 @@ angular.module( "vokal.datePicker", [] )
                     '<div class="filler-space" data-ng-repeat="space in filler"></div>' +
                     '<div class="date-cell" ' +
                     'data-ng-class="{ today: dayNow == day && monthNow == month && yearNow == year }" ' +
-                    'data-ng-repeat="day in days" data-ng-click="applyDate( month + \'/\' + day + \'/\' + year )">' +
+                    'data-ng-repeat="day in days" data-ng-click="applyDate( month, day, year )">' +
                     "{{ day }}</div></div>" );
                 $compile( template )( scope );
                 element.after( template );
@@ -138,21 +161,7 @@ angular.module( "vokal.datePicker", [] )
                 {
                     if( !scope.showDatepicker )
                     {
-                        var startingYear, startingMonth;
-
-                        if( Date.parse( ngModelController.$modelValue ) )
-                        {
-                            var dateStarting = new Date( ngModelController.$modelValue );
-                            startingYear     = dateStarting.getFullYear();
-                            startingMonth    = dateStarting.getMonth() + 1;
-                        }
-                        else
-                        {
-                            startingYear     = scope.yearNow;
-                            startingMonth    = scope.monthNow;
-                        }
-
-                        scope.buildMonth( startingYear, startingMonth );
+                        scope.buildMonth( localMoment.year(), localMoment.month() );
 
                         scope.showDatepicker = true;
                         $timeout( function ()
