@@ -36,11 +36,18 @@ angular.module( "vokal.timePicker", [] )
 
         return {
             restrict: "A",
-            scope: {},
+            scope: {
+                model: "=ngModel",
+                timezone: "="
+            },
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                var localMoment = moment();
+                if( scope.timezone && !moment.tz )
+                {
+                    console.warn( "Trying to use moment-timezone without including the script." );
+                }
+                var localMoment = scope.timezone ? moment.tz() : moment();
 
                 function filterForModel()
                 {
@@ -53,12 +60,29 @@ angular.module( "vokal.timePicker", [] )
                     return dateMoment.format( attrs.timePicker || defaultFormat );
                 }
 
-                function newLocalMoment( timeStr )
+                function setLocalTime( hours, minutes )
                 {
-                    return moment(
-                        // Preserve local date
-                        new Date( localMoment.toDate().toDateString() + " " + timeStr )
-                    );
+                    if( moment.isDate( hours ) )
+                    {
+                        localMoment = moment( hours );
+                        if( scope.timezone )
+                        {
+                            localMoment.tz( scope.timezone );
+                        }
+                        return;
+                    }
+                    localMoment.set( { "hour": hours, "minute": minutes } );
+                }
+                if( attrs.timezone )
+                {
+                    scope.$watch( "timezone", function ( newVal, oldVal )
+                    {
+                        if( newVal !== oldVal )
+                        {
+                            localMoment.tz( newVal || moment.tz.guess() );
+                            scope.model = filterForModel();
+                        }
+                    } );
                 }
 
                 // Convert data from view to model format and validate
@@ -70,7 +94,8 @@ angular.module( "vokal.timePicker", [] )
 
                     if( isValidTime )
                     {
-                        localMoment = newLocalMoment( str );
+                        var m = moment( new Date( defaultDateStr + str ) );
+                        setLocalTime( m.hours(), m.minutes() );
                     }
 
                     return filterForModel();
@@ -87,7 +112,7 @@ angular.module( "vokal.timePicker", [] )
 
                     if( isValidTime )
                     {
-                        localMoment = isValidDate ? moment( new Date( model ) ) : newLocalMoment( model );
+                        setLocalTime( isValidDate ? new Date( model ) : new Date( defaultDateStr + model ) );
                         return filterForRender( localMoment );
                     }
 
@@ -107,16 +132,19 @@ angular.module( "vokal.timePicker", [] )
                     {
                         minute        = k < 10 ? "0" + k : k;
                         workingTime   = new Date( defaultDateStr + i + ":" + minute );
-                        formattedTime = filterForRender( moment( workingTime ) );
-                        scope.times.push( formattedTime );
+                        scope.times.push( {
+                            display: filterForRender( moment( workingTime ) ),
+                            hours: i,
+                            minutes: k
+                        } );
                     }
                 }
                 // Function to put selected time in the scope
-                scope.applyTime = function ( selectedTime )
+                scope.applyTime = function ( time )
                 {
-                    console.log( "selectedTime: ", selectedTime );
-                    ngModelController.$setViewValue( selectedTime );
-                    ngModelController.$render();
+                    setLocalTime( time.hours, time.minutes );
+                    scope.model = filterForModel();
+                    ngModelController.$setDirty();
                     hidePicker();
                 };
 
@@ -124,7 +152,7 @@ angular.module( "vokal.timePicker", [] )
                 var template = angular.element(
                     '<ol class="time-picker" data-ng-show="showTimepicker">' +
                     '<li data-ng-repeat="time in times" data-ng-click="applyTime( time )">' +
-                    "{{ time }}</li></ol>" );
+                    "{{ time.display }}</li></ol>" );
                 $compile( template )( scope );
                 element.after( template );
 
