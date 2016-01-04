@@ -44,19 +44,19 @@ angular.module( "vokal.timePicker", [] )
                     return dateMoment.format( attrs.timePicker || defaultFormat );
                 }
 
+                function setLocalDate( date )
+                {
+                    localMoment = moment( hours );
+                    if( scope.timezone )
+                    {
+                        localMoment.tz( scope.timezone );
+                    }
+                }
                 function setLocalTime( hours, minutes )
                 {
-                    if( moment.isDate( hours ) )
-                    {
-                        localMoment = moment( hours );
-                        if( scope.timezone )
-                        {
-                            localMoment.tz( scope.timezone );
-                        }
-                        return;
-                    }
                     localMoment.set( { "hour": hours, "minute": minutes } );
                 }
+
                 if( attrs.timezone )
                 {
                     scope.$watch( "timezone", function ( newVal, oldVal )
@@ -96,7 +96,7 @@ angular.module( "vokal.timePicker", [] )
 
                     if( isValidTime )
                     {
-                        setLocalTime( isValidDate ? new Date( model ) : new Date( defaultDateStr + model ) );
+                        setLocalDate( isValidDate ? new Date( model ) : new Date( defaultDateStr + model ) );
                         return filterForRender( localMoment );
                     }
 

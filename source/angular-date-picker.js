@@ -39,19 +39,19 @@ angular.module( "vokal.datePicker", [] )
                     return dateMoment.format( attrs.datePicker || defaultFormat );
                 }
 
-                function setLocalDate( month, day, year )
+                function setLocalMonthDayYear( month, day, year )
                 {
-                    if( moment.isDate( month ) )
-                    {
-                        localMoment = moment( month );
-                        if( scope.timezone )
-                        {
-                            localMoment.tz( scope.timezone );
-                        }
-                        return;
-                    }
                     localMoment.set( { "month": month, "date": day, "year": year } );
                 }
+                function setLocalDate( date )
+                {
+                    localMoment = moment( date );
+                    if( scope.timezone )
+                    {
+                        localMoment.tz( scope.timezone );
+                    }
+                }
+
                 if( attrs.timezone )
                 {
                     scope.$watch( "timezone", function ( newVal, oldVal )
@@ -74,7 +74,7 @@ angular.module( "vokal.datePicker", [] )
                     if( isValidDate )
                     {
                         var m = moment( new Date( str ) );
-                        setLocalDate( m.month(), m.date(), m.years() );
+                        setLocalMonthDayYear( m.month(), m.date(), m.years() );
                     }
 
                     return filterForModel();
@@ -135,7 +135,7 @@ angular.module( "vokal.datePicker", [] )
                 // Function to put selected date in the scope
                 scope.applyDate = function ( month, day, year )
                 {
-                    setLocalDate( month, day, year );
+                    setLocalMonthDayYear( month, day, year );
                     scope.model = filterForModel();
                     ngModelController.$setDirty();
                     hidePicker();
