@@ -22,17 +22,16 @@ angular.module( "vokal.datePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                if( scope.timezone && !moment.tz )
+                var localMoment = moment();
+                setLocalTimezone( scope.timezone );
+                if( attrs.timezone && !moment.tz )
                 {
-                    console.warn( "Trying to use moment-timezone without including the script." );
+                    console.warn( "Trying to use timezones without including moment-timezone." );
                 }
-                var localMoment = scope.timezone ? moment.tz() : moment();
 
                 function filterForModel()
                 {
-                    return attrs.pickerType === "string" ?
-                        filterForRender( localMoment ) :
-                        localMoment.toDate();
+                    return attrs.pickerType === "string" ? filterForRender( localMoment ) : localMoment.toDate();
                 }
                 function filterForRender( dateMoment )
                 {
@@ -46,9 +45,13 @@ angular.module( "vokal.datePicker", [] )
                 function setLocalDate( date )
                 {
                     localMoment = moment( date );
-                    if( scope.timezone )
+                    setLocalTimezone();
+                }
+                function setLocalTimezone( tz )
+                {
+                    if( attrs.timezone && angular.isFunction( localMoment.tz ) )
                     {
-                        localMoment.tz( scope.timezone );
+                        localMoment.tz( tz || moment.tz.guess() );
                     }
                 }
 
@@ -58,8 +61,11 @@ angular.module( "vokal.datePicker", [] )
                     {
                         if( newVal !== oldVal )
                         {
-                            localMoment.tz( newVal || moment.tz.guess() );
-                            scope.model = filterForModel();
+                            setLocalTimezone( newVal );
+                            if( !!scope.model )
+                            {
+                                scope.model = filterForModel();
+                            }
                         }
                     } );
                 }

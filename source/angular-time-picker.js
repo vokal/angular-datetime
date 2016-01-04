@@ -27,17 +27,16 @@ angular.module( "vokal.timePicker", [] )
             require: "ngModel",
             link: function ( scope, element, attrs, ngModelController )
             {
-                if( scope.timezone && !moment.tz )
+                var localMoment = moment();
+                setLocalTimezone( scope.timezone );
+                if( attrs.timezone && !moment.tz )
                 {
-                    console.warn( "Trying to use moment-timezone without including the script." );
+                    console.warn( "Trying to use timezones without including moment-timezone." );
                 }
-                var localMoment = scope.timezone ? moment.tz() : moment();
 
                 function filterForModel()
                 {
-                    return attrs.pickerType === "string" ?
-                        filterForRender( localMoment ) :
-                        localMoment.toDate();
+                    return attrs.pickerType === "string" ? filterForRender( localMoment ) : localMoment.toDate();
                 }
                 function filterForRender( dateMoment )
                 {
@@ -46,15 +45,19 @@ angular.module( "vokal.timePicker", [] )
 
                 function setLocalDate( date )
                 {
-                    localMoment = moment( hours );
-                    if( scope.timezone )
-                    {
-                        localMoment.tz( scope.timezone );
-                    }
+                    localMoment = moment( date );
+                    setLocalTimezone();
                 }
                 function setLocalTime( hours, minutes )
                 {
                     localMoment.set( { "hour": hours, "minute": minutes } );
+                }
+                function setLocalTimezone( tz )
+                {
+                    if( attrs.timezone && angular.isFunction( localMoment.tz ) )
+                    {
+                        localMoment.tz( tz || moment.tz.guess() );
+                    }
                 }
 
                 if( attrs.timezone )
@@ -63,8 +66,11 @@ angular.module( "vokal.timePicker", [] )
                     {
                         if( newVal !== oldVal )
                         {
-                            localMoment.tz( newVal || moment.tz.guess() );
-                            scope.model = filterForModel();
+                            setLocalTimezone( newVal );
+                            if( !!scope.model )
+                            {
+                                scope.model = filterForModel();
+                            }
                         }
                     } );
                 }
