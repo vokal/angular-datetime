@@ -24,6 +24,7 @@ angular.module( "vokal.timePicker", [] )
 
         var defaultFormat = "h:mm a";
         var defaultDateStr = "1/1/1990" + " ";
+        var hasWarnedTz;
 
         function validateTime( timeStr )
         {
@@ -32,6 +33,14 @@ angular.module( "vokal.timePicker", [] )
         function validateDate( dateOrString )
         {
             return !!dateOrString && moment( new Date( dateOrString ) ).isValid();
+        }
+        function warnTz()
+        {
+            if( !hasWarnedTz )
+            {
+                console.warn( "Trying to use timezones without including moment-timezone." );
+                hasWarnedTz = true;
+            }
         }
 
         return {
@@ -47,7 +56,7 @@ angular.module( "vokal.timePicker", [] )
                 updateLocalTimezone();
                 if( attrs.timezone && !moment.tz )
                 {
-                    console.warn( "Trying to use timezones without including moment-timezone." );
+                    warnTz();
                 }
 
                 function filterForModel()

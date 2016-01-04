@@ -7,10 +7,19 @@ angular.module( "vokal.datePicker", [] )
         "use strict";
 
         var defaultFormat = "M/D/YYYY";
+        var hasWarnedTz;
 
         function validateDate( dateOrString )
         {
             return !!dateOrString && moment( new Date( dateOrString ) ).isValid();
+        }
+        function warnTz()
+        {
+            if( !hasWarnedTz )
+            {
+                console.warn( "Trying to use timezones without including moment-timezone." );
+                hasWarnedTz = true;
+            }
         }
 
         return {
@@ -26,7 +35,7 @@ angular.module( "vokal.datePicker", [] )
                 updateLocalTimezone();
                 if( attrs.timezone && !moment.tz )
                 {
-                    console.warn( "Trying to use timezones without including moment-timezone." );
+                    warnTz();
                 }
 
                 function filterForModel()
