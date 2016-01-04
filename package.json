@@ -1,6 +1,6 @@
 {
   "name": "angular-datetime",
-  "version": "2.1.5",
+  "version": "3.0.0",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
   "main": "dist/index.js",
@@ -27,5 +27,9 @@
     "grunt-contrib-uglify": "^0.8.0",
     "grunt-umd": "^2.3.3",
     "grunt-contrib-copy": "^0.8.1"
+  },
+  "dependencies": {
+    "moment": "^2.10.6",
+    "moment-timezone": "^0.5.0"
   }
 }
