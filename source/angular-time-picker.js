@@ -28,7 +28,7 @@ angular.module( "vokal.timePicker", [] )
             link: function ( scope, element, attrs, ngModelController )
             {
                 var localMoment = moment();
-                setLocalTimezone( scope.timezone );
+                updateLocalTimezone();
                 if( attrs.timezone && !moment.tz )
                 {
                     console.warn( "Trying to use timezones without including moment-timezone." );
@@ -46,17 +46,17 @@ angular.module( "vokal.timePicker", [] )
                 function setLocalDate( date )
                 {
                     localMoment = moment( date );
-                    setLocalTimezone();
+                    updateLocalTimezone();
                 }
                 function setLocalTime( hours, minutes )
                 {
                     localMoment.set( { "hour": hours, "minute": minutes } );
                 }
-                function setLocalTimezone( tz )
+                function updateLocalTimezone()
                 {
                     if( attrs.timezone && angular.isFunction( localMoment.tz ) )
                     {
-                        localMoment.tz( tz || moment.tz.guess() );
+                        localMoment.tz( scope.timezone || moment.tz.guess() );
                     }
                 }
 
@@ -66,7 +66,7 @@ angular.module( "vokal.timePicker", [] )
                     {
                         if( newVal !== oldVal )
                         {
-                            setLocalTimezone( newVal );
+                            updateLocalTimezone();
                             if( !!scope.model )
                             {
                                 scope.model = filterForModel();
