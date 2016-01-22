@@ -7,9 +7,4 @@ describe( "Co-op Pickers", function ()
         browser.get( "/" );
     } );
 
-    it( "should run this test", function ()
-    {
-        expect( 5 + 6 ).toBe( 11 );
-    } );
-
 } );

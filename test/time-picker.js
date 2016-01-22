@@ -7,9 +7,4 @@ describe( "Time Picker", function ()
         browser.get( "/" );
     } );
 
-    it( "should run this test", function ()
-    {
-        expect( 1 + 2 ).toBe( 3 );
-    } );
-
 } );

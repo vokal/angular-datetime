@@ -9,9 +9,4 @@ describe( "Date Picker", function ()
         browser.get( harnessUrl );
     } );
 
-    it( "should run this test", function ()
-    {
-        expect( 7 + 8 ).toBe( 15 );
-    } );
-
 } );
