@@ -21,7 +21,13 @@ module.exports = function ( grunt )
                 options: {
                     transform: [
                         [ "browserify-istanbul", {
-                            ignore: [ "**/node_modules/**", "**/test/**" ]
+                            ignore: [
+                                "**/node_modules/**",
+                                "**/test/**",
+                                "**/source/date-picker.js",
+                                "**/source/time-picker.js",
+                                "**/source/index.js"
+                            ]
                         } ],
                         [ "babelify", { presets: [ "es2015" ] } ]
                     ],
