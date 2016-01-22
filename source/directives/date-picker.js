@@ -1,4 +1,4 @@
-"ust strict";
+"use strict";
 
 module.exports = [ "$compile", "$filter", "$document", "$timeout",
     function ( $compile, $filter, $document, $timeout )
