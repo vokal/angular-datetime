@@ -1,6 +1,6 @@
 {
   "name": "angular-datetime",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
   "main": "source/index.js",
@@ -20,8 +20,8 @@
   "scripts": {
     "dist": "grunt dist",
     "start": "node server",
-    "webdriver-update": "node ./node_modules/protractor/bin/webdriver-manager update",
-    "test": "npm run webdriver-update && grunt"
+    "pretest": "node ./node_modules/protractor/bin/webdriver-manager update",
+    "test": "grunt"
   },
   "license": "MIT",
   "devDependencies": {
