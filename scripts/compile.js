@@ -41,8 +41,5 @@ try
     less.render( fs.readFileSync( obj.src ).toString(), {
         filename: obj.src
     } )
-        .then( output =>
-        {
-            return fs.writeFile( obj.dest, output.css );
-        } );
+        .then( output => fs.writeFile( obj.dest, output.css ) );
 } );
