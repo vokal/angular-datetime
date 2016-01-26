@@ -10,7 +10,7 @@ Both the date picker and the time picker require Moment as a dependency. Include
 
 ### Date Picker
 
-Add `dist/angular-date-picker.min.js` and `dist/angular-date-picker.css` to your project, and include `vokal.datePicker` in your module dependencies.
+Add `dist/angular-date-picker.js` and `dist/angular-date-picker.css` to your project, and include `vokal.datePicker` in your module dependencies.
 
 ```html
 <input type="text" data-ng-model="dateModel" data-date-picker[="M/D/YYYY"]
@@ -37,7 +37,7 @@ Supported zones are limited to those identifiable to `moment-timezone`, which ca
 
 ### Time Picker
 
-Add `dist/angular-time-picker.min.js` and `dist/angular-time-picker.css` to your project, and include `vokal.timePicker` in your module dependencies.
+Add `dist/angular-time-picker.js` and `dist/angular-time-picker.css` to your project, and include `vokal.timePicker` in your module dependencies.
 
 ```html
 <input type="text" data-ng-model="timeModel" data-time-picker[="h:mm a"]
