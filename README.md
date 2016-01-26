@@ -2,7 +2,7 @@
 
 Basic date/time pickers for Angular.js.
 
-> Maintained by @Tathanen
+> Maintained by @Tathanen and @dmaloneycalu
 
 ## Configuration & Usage
 

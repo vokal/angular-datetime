@@ -1,2 +1,2 @@
-require( "./angular-date-picker" );
-require( "./angular-time-picker" );
+require( "./date-picker" );
+require( "./time-picker" );

@@ -3,71 +3,75 @@
 module.exports = function ( grunt )
 {
     grunt.initConfig( {
-
-        pkg: grunt.file.readJSON( "package.json" ),
-
-        less:
-        {
+        clean: {
+            coverage: [ "coverage/" ],
+            dist: [ "dist/" ]
+        },
+        less: {
             all:
             {
                 files: {
-                    "dist/angular-date-picker.css": "source/angular-date-picker.less",
-                    "dist/angular-time-picker.css": "source/angular-time-picker.less"
+                    "build/angular-date-picker.css": "source/styles/angular-date-picker.less",
+                    "build/angular-time-picker.css": "source/styles/angular-time-picker.less"
                 }
             }
         },
-
-        umd: {
-            date: {
+        browserify: {
+            test: {
                 options: {
-                    src: "source/angular-date-picker.js",
-                    dest: "dist/angular-date-picker.js",
-                    amdModuleId: "angular-date-picker"
+                    transform: [
+                        [ "browserify-istanbul", {
+                            ignore: [
+                                "**/node_modules/**",
+                                "**/test/**",
+                                "**/source/date-picker.js",
+                                "**/source/time-picker.js",
+                                "**/source/index.js"
+                            ]
+                        } ],
+                        [ "babelify", { presets: [ "es2015" ] } ]
+                    ],
+                    browserifyOptions: {
+                        debug: true
+                    }
+                },
+                files: {
+                    "build/test.js": [ "test/harness/index.js" ],
+                    "build/test-tz.js": [ "test/harness/index-tz.js" ]
+                }
+            }
+        },
+        protractor_coverage: {
+            options: {
+                keepAlive: false,
+                noColor: false,
+                coverageDir: "coverage/protractor",
+                args: {
+                    baseUrl: "http://localhost:3000"
                 }
             },
-            time: {
+            test: {
                 options: {
-                    src: "source/angular-time-picker.js",
-                    dest: "dist/angular-time-picker.js",
-                    amdModuleId: "angular-time-picker"
+                    configFile: "test/config/protractor.js"
                 }
             }
         },
-
-        uglify:
-        {
-            options:
-            {
-                mangle: true,
-                compress: true,
-                banner: "/*! <%= pkg.name %> Copyright Vokal <%= grunt.template.today( 'yyyy' ) %> */\n",
-                sourceMap: false
-            },
-            all:
-            {
-                files:
-                {
-                    "dist/angular-date-picker.min.js": "dist/angular-date-picker.js",
-                    "dist/angular-time-picker.min.js": "dist/angular-time-picker.js"
-                }
-            }
-        },
-
-        copy: {
-            dist: {
-                src: "source/index.js",
-                dest: "dist/index.js"
+        makeReport: {
+            src: "coverage/**/*.json",
+            options: {
+                type: [ "lcov", "html" ],
+                dir: "coverage/net",
+                print: "detail"
             }
         }
-
     } );
 
     // Load plugins
+    grunt.loadNpmTasks( "grunt-browserify" );
+    grunt.loadNpmTasks( "grunt-contrib-clean" );
     grunt.loadNpmTasks( "grunt-contrib-less" );
-    grunt.loadNpmTasks( "grunt-contrib-uglify" );
-    grunt.loadNpmTasks( "grunt-contrib-copy" );
-    grunt.loadNpmTasks( "grunt-umd" );
+    grunt.loadNpmTasks( "grunt-protractor-coverage" );
+    grunt.loadNpmTasks( "grunt-istanbul" );
 
-    grunt.registerTask( "dist", [ "less", "umd", "copy", "uglify" ] );
-
+    grunt.registerTask( "default", [ "clean", "less", "browserify", "protractor_coverage", "makeReport" ] );
 };
