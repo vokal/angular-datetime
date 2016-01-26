@@ -3,7 +3,7 @@
   "version": "3.0.1",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
-  "main": "source/index.js",
+  "main": "dist/index.js",
   "bugs": {
     "url": "http://github.com/vokal/angular-datetime/issues"
   },
@@ -21,7 +21,8 @@
     "dist": "grunt dist",
     "start": "node server",
     "pretest": "node ./node_modules/protractor/bin/webdriver-manager update",
-    "test": "grunt"
+    "test": "grunt test",
+    "prepublish": "grunt compile"
   },
   "license": "MIT",
   "devDependencies": {
@@ -35,6 +36,7 @@
     "grunt-browserify": "^4.0.1",
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-less": "^0.11.4",
+    "grunt-contrib-uglify": "^0.11.0",
     "grunt-istanbul": "^0.6.1",
     "grunt-protractor-coverage": "^0.2.15",
     "protractor": "^2.5.1",

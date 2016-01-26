@@ -2,5 +2,6 @@ logs
 *.log
 .grunt
 build
+dist
 node_modules
 coverage
