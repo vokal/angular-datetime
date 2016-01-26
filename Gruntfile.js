@@ -4,15 +4,15 @@ module.exports = function ( grunt )
 {
     grunt.initConfig( {
         clean: {
+            build: [ "build/" ],
             coverage: [ "coverage/" ],
             dist: [ "dist/" ]
         },
         less: {
-            all:
-            {
+            all: {
                 files: {
-                    "build/angular-date-picker.css": "source/styles/angular-date-picker.less",
-                    "build/angular-time-picker.css": "source/styles/angular-time-picker.less"
+                    "dist/angular-date-picker.css": "source/styles/angular-date-picker.less",
+                    "dist/angular-time-picker.css": "source/styles/angular-time-picker.less"
                 }
             }
         },
@@ -73,5 +73,5 @@ module.exports = function ( grunt )
     grunt.loadNpmTasks( "grunt-protractor-coverage" );
     grunt.loadNpmTasks( "grunt-istanbul" );
 
-    grunt.registerTask( "default", [ "clean", "less", "browserify", "protractor_coverage", "makeReport" ] );
+    grunt.registerTask( "test", [ "clean", "less", "browserify:test", "protractor_coverage", "makeReport" ] );
 };
