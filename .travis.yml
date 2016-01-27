@@ -11,8 +11,7 @@ before_script:
 deploy:
   provider: npm
   email: npm@vokal.io
-  api_key:
-    secure: apM6fiSstpoyIPpE4iolRKZw2FYWP3Bpo/nfSuwbD5MjX1Z5E1lnsIYrABBbzEtXFUHBAU4G+nFpeMV8wgCgcKoA6EM8EskQs/F29JkCGbImq6rwfGPBwf37WZXNWHV//LH+9A7x7Y/4wvUzJylxJ3srWiouyNxdQNwC8T1Y+hX2SJmDVMYYIt47nnPNZNGrquDZmp2dESt49MnFZW8AnN1ck0oFEufqSF+jhhRfmQt0frJfk7KXTQTbUDI0kxJkWXQNbhIXsY9bUMjR7qx4iZLlrEo3diu5VB8zWuL0rily+iVqqua2HbSPjawtQxMmODJ9UkpgbnBOsWfmz4UK7cZrECjNfLrQw0oiWjpSiSA33B1RC9A+pAJfC/jjZGZV8ualhanMi/h0iyu7w0LQXYwKH3/L5XgRO5tj9BdLoGj+nbE217hQy5NZ1ssdG0gdZUeoGKCRp7nSW171SUdPgHWNBe5l63y7Upr5MrDF/7OU/evNLblu/OCilwRrSwRrx8NBXDoW3w5U0KPLN3UlZU5sfcB5IQEtNfEbzqgwSrpnyvDSE0rydn+vqRwHILTDC9X6sxrZ+f66sgTMKuRqaR8I03OzlCWS+Oyii+ZYQEUHHOq5FmGO0y6x8/E78bT2CO2dt5SuKRNpfmIGWbZKHLVen8lzh3M8jlXXfzq5T0Q=
+  api_key: $NPM_API_KEY
   on:
     tags: true
     repo: vokal/angular-datetime
