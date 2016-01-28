@@ -24,8 +24,6 @@ module.exports = function ( grunt )
                             ignore: [
                                 "**/node_modules/**",
                                 "**/test/**",
-                                "**/source/date-picker.js",
-                                "**/source/time-picker.js",
                                 "**/source/index.js"
                             ]
                         } ],
