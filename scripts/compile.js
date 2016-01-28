@@ -1,33 +1,29 @@
-var browserify = require( "browserify" );
+var babel = require( "babel-core" );
 var less = require( "less" );
 var fs = require( "fs" );
 
-try
-{
-    fs.mkdirSync( "dist" );
-} catch( e )
-{
-    if( e.code != "EEXIST" )
+fs.mkdir( "dist", err => {
+    if( err && err.code != "EEXIST" )
     {
-        throw e;
+        throw err;
     }
-}
+    fs.mkdir( "dist/directives", e => {
+        if( e && e.code != "EEXIST" )
+        {
+            throw e;
+        }
+    } );
+} );
 
-[ {
-    src: "source/date-picker.js",
-    dest: "dist/angular-date-picker.js"
-}, {
-    src: "source/time-picker.js",
-    dest: "dist/angular-time-picker.js"
-}, {
-    src: "source/index.js",
-    dest: "dist/index.js"
-} ].forEach( obj =>
+[
+    "index.js",
+    "directives/date-picker.js",
+    "directives/time-picker.js"
+].forEach( file =>
 {
-    browserify( obj.src, {} )
-        .transform( "babelify", { presets: [ "es2015" ] } )
-        .bundle()
-        .pipe( fs.createWriteStream( obj.dest ) );
+    babel.transformFile( "source/" + file, {
+        presets: [ "es2015" ]
+    }, ( err, result ) => fs.writeFile( "dist/" + file, result.code ) );
 } );
 
 [ {

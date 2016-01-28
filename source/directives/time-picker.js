@@ -1,6 +1,7 @@
 "use strict";
 
-module.exports = [ "$compile", "$filter", "$document", "$timeout",
+angular.module( "vokal.timePicker", [] )
+.directive( "timePicker", [ "$compile", "$filter", "$document", "$timeout",
     function ( $compile, $filter, $document, $timeout )
     {
         var defaultFormat = "h:mm a";
@@ -188,4 +189,4 @@ module.exports = [ "$compile", "$filter", "$document", "$timeout",
         };
     }
 
-];
+] );

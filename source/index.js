@@ -1,2 +1,2 @@
-require( "./date-picker" );
-require( "./time-picker" );
+require( "./directives/date-picker" );
+require( "./directives/time-picker" );

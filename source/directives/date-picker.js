@@ -1,6 +1,7 @@
 "use strict";
 
-module.exports = [ "$compile", "$filter", "$document", "$timeout",
+angular.module( "vokal.datePicker", [] )
+.directive( "datePicker", [ "$compile", "$filter", "$document", "$timeout",
     function ( $compile, $filter, $document, $timeout )
     {
         var defaultFormat = "M/D/YYYY";
@@ -205,4 +206,4 @@ module.exports = [ "$compile", "$filter", "$document", "$timeout",
         };
     }
 
-];
+] );
