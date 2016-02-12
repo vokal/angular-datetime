@@ -1,5 +1,7 @@
 /* Date Picker Styles */
 
+@import "vars";
+
 .date-picker {
 
     -moz-box-sizing: border-box;
@@ -11,15 +13,15 @@
     margin-top: 2px;
     padding: 2px 0 0 2px;
     overflow: hidden;
-    border: 1px solid #CCCCCC;
-    background-color: #FFFFFF;
+    border: 1px solid @datetime-tone3;
+    background-color: @datetime-tone5;
     box-shadow: 0 0 3px 0 rgba( 0, 0, 0, 0.2 );
 
     .month-name {
         clear: left;
         padding: 3px 0;
         margin: 0 2px 2px 0;
-        background-color: #EEEEEE;
+        background-color: @datetime-tone4;
         text-align: center;
         font-size: 12px;
     }
@@ -47,7 +49,7 @@
         width: 20px;
         height: 20px;
         margin: 0 2px 2px 0;
-        border: 1px solid #FFFFFF;
+        border: 1px solid @datetime-tone5;
         text-align: center;
         line-height: 20px;
         font-size: 12px;
@@ -55,21 +57,21 @@
     }
 
     .day-name-cell {
-        color: #AAAAAA;
+        color: @datetime-tone1;
     }
 
     .date-cell {
 
-        border: 1px solid #CCCCCC; cursor: pointer;
+        border: 1px solid @datetime-tone3; cursor: pointer;
 
         &:hover {
-            background-color: #EEEEEE;
+            background-color: @datetime-tone4;
         }
 
         &.today {
-            border: 1px solid #AAAAAA;
-            background-color: #EEEEEE;
-            color: #666666;
+            border: 1px solid @datetime-tone2;
+            background-color: @datetime-tone4;
+            color: @datetime-tone1;
         }
 
     }
