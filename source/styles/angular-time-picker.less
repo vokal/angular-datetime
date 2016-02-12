@@ -1,5 +1,7 @@
 /* Time Picker Styles */
 
+@import "vars";
+
 .time-picker {
 
     -moz-box-sizing: border-box;
@@ -12,8 +14,8 @@
     margin-top: 2px;
     padding: 0;
     overflow: auto;
-    border: 1px solid #CCCCCC;
-    background-color: #FFFFFF;
+    border: 1px solid @datetime-tone3;
+    background-color: @datetime-tone5;
     box-shadow: 0 0 3px 0 rgba( 0, 0, 0, 0.2 );
 
     & > li {
@@ -24,13 +26,13 @@
         display: block;
         margin: 0;
         padding: 6px 30px 6px 6px;
-        background-color: #FFFFFF;
+        background-color: @datetime-tone5;
         font-size: 12px;
         cursor: default;
         white-space: nowrap;
 
         &:hover {
-            background-color: #EEEEEE;
+            background-color: @datetime-tone4;
         }
 
     }

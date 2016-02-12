@@ -1,6 +1,6 @@
 {
   "name": "angular-datetime",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
   "main": "dist/index.js",
@@ -40,7 +40,7 @@
     "grunt-protractor-coverage": "^0.2.15",
     "less": "^2.5.3",
     "protractor": "^2.5.1",
-    "protractor-axs": "github:vokal/protractor-axs",
+    "protractor-axs": "^1.0.0",
     "q": "^1.4.1"
   },
   "dependencies": {
