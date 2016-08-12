@@ -87,7 +87,7 @@ angular.module( "vokal.datePicker", [] )
                     if( isValidDate )
                     {
                         var m = moment( new Date( str ) );
-                        setLocalMonthDayYear( m.month(), m.date(), m.years() );
+                        setLocalMonthDayYear( m.month(), m.date(), m.year() );
                     }
 
                     return filterForModel();
@@ -151,6 +151,8 @@ angular.module( "vokal.datePicker", [] )
                     setLocalMonthDayYear( month, day, year );
                     scope.model = filterForModel();
                     ngModelController.$setDirty();
+                    ngModelController.$setViewValue( filterForRender( localMoment ) );
+                    ngModelController.$render();
                     hidePicker();
                 };
 
@@ -192,7 +194,8 @@ angular.module( "vokal.datePicker", [] )
                 // Hide the picker when clicking away
                 var handler = function ( event )
                 {
-                    if( !template[ 0 ].contains( event.target ) )
+                    if( event.target !== element[ 0 ]
+                        && Array.prototype.slice.call( template[ 0 ].children ).indexOf( event.target ) === -1 )
                     {
                         scope.$apply( hidePicker );
                     }
@@ -200,7 +203,10 @@ angular.module( "vokal.datePicker", [] )
                 function hidePicker()
                 {
                     $document.off( "click touchstart", handler );
-                    scope.showDatepicker = false;
+                    $timeout( function ()
+                    {
+                        scope.showDatepicker = false;
+                    }, 25 );
                 }
             }
         };

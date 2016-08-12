@@ -1,6 +1,6 @@
 {
   "name": "angular-datetime",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Basic date/time pickers for Angular.js",
   "homepage": "http://github.com/vokal/angular-datetime",
   "main": "dist/index.js",
